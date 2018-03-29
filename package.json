@@ -1,7 +1,8 @@
 {
-  "name": "jquery-date-range-picker",
+  "name": "jquery-daterange-picker",
+  "main": "dist/jquery.daterangepicker.min.js",
   "description": "jQuery Date Range Picker is a jQuery plugin that allows user to select a date range.",
-  "version": "0.16.1",
+  "version": "2.10.0",
   "license": "MIT",
   "keywords": [
     "jquery",
@@ -13,12 +14,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/longbill/jquery-date-range-picker.git"
+    "url": "git://github.com/wakirin/jquery-date-range-picker.git"
   },
   "bugs": {
-    "url": "https://github.com/longbill/jquery-date-range-picker/issues"
+    "url": "https://github.com/wakirin/jquery-date-range-picker/issues"
   },
-  "homepage": "https://github.com/longbill/jquery-date-range-picker",
+  "homepage": "https://github.com/wakirin/jquery-date-range-picker",
   "maintainers": [],
   "scripts": {
     "dist": "gulp",
@@ -29,7 +30,7 @@
     "node": "0.12.x",
     "npm": "~3.9.2"
   },
-  "author": "longbill",
+  "author": "waki <npm@coding.kz>",
   "contributors": [],
   "dependencies": {
     "moment": ">=2.8.1",
