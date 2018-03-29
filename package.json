@@ -1,5 +1,5 @@
 {
-  "name": "jquery-daterange-picker",
+  "name": "@waki/jquery-date-range-picker",
   "main": "dist/jquery.daterangepicker.min.js",
   "description": "jQuery Date Range Picker is a jQuery plugin that allows user to select a date range.",
   "version": "2.10.0",
