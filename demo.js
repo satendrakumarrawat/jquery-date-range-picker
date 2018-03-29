@@ -501,5 +501,25 @@ $(function()
 		}
 	});
 
+	$('#date-range55').dateRangePicker(
+	{
+        autoClose: true,
+        reSelectPerOne: true,
+        separator : ' to ',
+        format:"MMM D, YYYY",
+        getValue: function()
+        {
+        	 if ($('#checkin').text() && $('#checkout').text() )
+        	 	return $('#checkin').text() + ' to ' + $('#checkout').text();
+        	 else
+        	 	return '';
+        },
+        setValue: function(s,s1,s2)
+        {
+        	$('#checkin').text(s1);
+        	$('#checkout').text(s2);
+        }
+	});
+
 
 });

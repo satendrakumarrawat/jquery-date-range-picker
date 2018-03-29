@@ -415,3 +415,24 @@
     }
   }
 }
+.date-picker-wrapper .first-date-selected.hovering,
+.date-picker-wrapper .last-date-selected.hovering {
+  background-color: #cdecfa!important;
+  color: #333!important;
+}
+.date-picker-wrapper .first-date-selected.out-range,
+.date-picker-wrapper .last-date-selected.out-range {
+  background-color: #fff!important;
+  color: #333!important;
+}
+.date-picker-wrapper .day:hover:not(.invalid) {
+  background-color: #49e!important;
+  color: #fff!important;
+}
+.date-picker-wrapper .day.in-range {
+  background-color: #cdecfa;
+}
+.date-picker-wrapper .day.out-range:not(.invalid):not(.real-today):not(.first-date-selected):not(.last-date-selected) {
+  background-color: #fff!important;
+  color: #333!important;
+}

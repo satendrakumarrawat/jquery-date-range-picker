@@ -25,7 +25,25 @@
 		.options { display:none; border-left:6px solid #8ae; padding:10px; font-size:12px; line-height:1.4; background-color:#eee; border-radius:4px;}
 		.date-picker-wrapper.date-range-picker19 .day.first-date-selected { background-color: red !important; }
 		.date-picker-wrapper.date-range-picker19 .day.last-date-selected { background-color: orange !important; }
-		</style>
+		#date-range55 { display: flex; }
+		#date-range55 > span {
+		  padding: 5px 5px 5px 5px;
+		  cursor: pointer;
+		  width: 110px;
+		  height: 18px;
+		  border: 1px solid #ddd;
+		  position: relative;
+		  margin-right: 5px;
+		}
+		#date-range55 > span:after {
+		  font-family: FontAwesome;
+		  content: "\f073";
+		  position: absolute;
+		  right: 5px;
+		  top: 5px;
+		  color: #898989;
+		}
+				</style>
 	</head>
 	<body>
 
@@ -693,6 +711,31 @@ $('#date-range16-reset').click(function(evt)
 				</pre>
 			</div>
 
+			<div class="demo">
+				Re-select field per one field (+ span, + autoClose): 
+			    <div id="date-range55">
+			        <span id="checkin"></span> <span id="checkout"></span>
+			    </div>
+				<a href="#" class="show-option">Show Config</a>
+				<pre class="options">
+{
+    autoClose: true,
+    reSelectPerOne: true,
+    getValue: function()
+    {
+        if ($('#checkin').text() && $('#checkout').text() )
+            return $('#checkin').text() + ' to ' + $('#checkout').text();
+        else
+        	return '';
+        },
+    setValue: function(s,s1,s2)
+    {
+        $('#checkin').text(s1);
+        $('#checkout').text(s2);
+    }
+}
+				</pre>
+			</div>
 
             <h2 id="configuration">Configuration</h2>
 			<pre><b>Usage:</b> $('#dom-id').dateRangePicker(configObject);</pre>

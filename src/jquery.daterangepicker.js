@@ -878,6 +878,9 @@
             selectBackward: false,
             applyBtnClass: '',
             singleMonth: 'auto',
+            fromField: 'checkin',
+            toField: 'checkout',
+            reSelectPerOne: false,
             hoveringTooltip: function(days, startTime, hoveringTime) {
                 return days > 1 ? days + ' ' + translate('days') : '';
             },
@@ -900,6 +903,8 @@
         opt.end = false;
 
         opt.startWeek = false;
+
+        opt.initiatedFieldID = null;
 
         //detect a touch device
         opt.isTouchDevice = 'ontouchstart' in window || navigator.msMaxTouchPoints;
@@ -928,8 +933,29 @@
         var domChangeTimer;
 
         $(this).unbind('.datepicker').bind('click.datepicker', function(evt) {
-            var isOpen = box.is(':visible');
+            var isOpen = box.is(':visible'),
+                firstDate = $('.first-date-selected'),
+                lastDate = $('.last-date-selected');
+
             if (!isOpen) open(opt.duration);
+
+            if (opt.reSelectPerOne) {
+                opt.initiatedFieldID = evt.target.id;
+
+                if (opt.initiatedFieldID === opt.fromField && firstDate) {
+                    $(".last-date-selected").click();
+                }
+                if (opt.initiatedFieldID === opt.toField) {
+                    $(".date-picker-wrapper").css({
+                        top: $("#"+opt.toField).offset().bottom,
+                        left: $("#"+opt.toField).offset().left
+                    });
+
+                    if (lastDate) {
+                        $(".first-date-selected").click();
+                    }
+                }
+            }
         }).bind('change.datepicker', function(evt) {
             checkAndSetDefaultValue();
         }).bind('keyup.datepicker', function() {
@@ -1905,6 +1931,9 @@
                     (opt.start && !opt.end && moment(start).format('YYYY-MM-DD') == moment(time).format('YYYY-MM-DD'))
                 ) {
                     $(this).addClass('checked');
+                    if (opt.reSelectPerOne) {
+                        $(this).addClass('in-range');
+                    }
                 } else {
                     $(this).removeClass('checked');
                 }
@@ -2032,19 +2061,53 @@
 
         function bindEvents() {
             box.find('.day').unbind("click").click(function(evt) {
+                var firstDate = $('.first-date-selected'),
+                    lastDate = $('.last-date-selected');
+
                 dayClicked($(this));
+
+                if (opt.reSelectPerOne) {
+                    if (firstDate) {
+                        firstDate.addClass('first-date-selected');
+                    }
+
+                    if (lastDate) {
+                        lastDate.addClass('last-date-selected');
+                    }
+                }
             });
 
             box.find('.day').unbind("mouseenter").mouseenter(function(evt) {
                 dayHovering($(this));
+
+                if (opt.reSelectPerOne) {
+                    if (opt.start || opt.end) {
+                        box.find('.day:not(.hovering)').addClass('out-range');
+                    }
+
+                    if (opt.initiatedFieldID === 'checkin' && $('.last-date-selected').length > 0) {
+                        $('.last-date-selected').removeClass('out-range');
+                    }
+                    else {
+                        $('.first-date-selected').removeClass('out-range');
+                    }
+                }
             });
 
             box.find('.day').unbind("mouseleave").mouseleave(function(evt) {
+                box.find('.day').removeClass('out-range');
+
                 box.find('.date-range-length-tip').hide();
                 if (opt.singleDate) {
                     clearHovering();
                 }
             });
+
+            if (opt.reSelectPerOne) {
+                box.find('.month-wrapper').unbind("mouseleave").mouseleave(function(evt) {
+                    box.find('.day').removeClass('hovering out-range');
+                });
+            }
 
             box.find('.week-number').unbind("click").click(function(evt) {
                 weekNumberClicked($(this));
