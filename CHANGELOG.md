@@ -1,3 +1,8 @@
+### 2.10.1
+* added `reSelectPerOne` option
+
+### 2.10.0
+* forked
 
 ### 0.0.8
 
