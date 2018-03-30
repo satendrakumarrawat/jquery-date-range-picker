@@ -1,7 +1,6 @@
 ## jQuery Date Range Picker Plugin
 
-[![CDNJS](https://img.shields.io/cdnjs/v/jquery-date-range-picker.svg)](https://cdnjs.com/libraries/jquery-date-range-picker)
-[![Bower Version](https://img.shields.io/bower/v/jquery-date-range-picker.svg?maxAge=3600)]()
+[![npm version](https://badge.fury.io/js/%40waki%2Fjquery-date-range-picker.svg)](https://www.npmjs.com/package/@waki/jquery-date-range-picker)
 [![License](https://img.shields.io/github/license/longbill/jquery-date-range-picker.svg?maxAge=2592000)]()
 
 jQuery Date Range Picker is a jQuery plugin that allows user to select a date range.
@@ -10,10 +9,11 @@ jQuery Date Range Picker is a jQuery plugin that allows user to select a date ra
 * Supports IE7+, Firefox, Chrome, Safari and other standard HTML5 browsers.
 * Supports multi-language
 * Fully CSS styled
-* Written by Chunlong ( jszen.com )
+* Written by [Chunlong](http://jszen.com), [Longbill](https://github.com/longbill/jquery-date-range-picker)
 * I accept further customization job if you require more functions. Please contact me via longbill.cn@gmail.com
 
-## [Documentation & Demo](http://longbill.github.io/jquery-date-range-picker/)
+
+## [Documentation & Demo](https://wakirin.github.io/jquery-date-range-picker/)
 
 ![screenshot](https://raw.github.com/longbill/jquery-date-range-picker/master/preview.jpg)
 
@@ -42,8 +42,6 @@ gulp
 ```
 * Above command will generate new files by reading from ```src``` folder
 
-### Change log
-* See [changelog](CHANGELOG.md)
 
 ### License
 This date range picker plugin is under MIT LICENSE
