@@ -1,3 +1,8 @@
+### 2.11.0
+* rename `reSelectPerOne` option to `quickReSelect`
+* improve `quickReSelect` option
+* use moment to calculate the difference between dates
+
 ### 2.10.1
 * added `reSelectPerOne` option
 
