@@ -25,25 +25,7 @@
 		.options { display:none; border-left:6px solid #8ae; padding:10px; font-size:12px; line-height:1.4; background-color:#eee; border-radius:4px;}
 		.date-picker-wrapper.date-range-picker19 .day.first-date-selected { background-color: red !important; }
 		.date-picker-wrapper.date-range-picker19 .day.last-date-selected { background-color: orange !important; }
-		#date-range55 { display: flex; }
-		#date-range55 > span {
-		  padding: 5px 5px 5px 5px;
-		  cursor: pointer;
-		  width: 110px;
-		  height: 18px;
-		  border: 1px solid #ddd;
-		  position: relative;
-		  margin-right: 5px;
-		}
-		#date-range55 > span:after {
-		  font-family: FontAwesome;
-		  content: "\f073";
-		  position: absolute;
-		  right: 5px;
-		  top: 5px;
-		  color: #898989;
-		}
-				</style>
+		</style>
 	</head>
 	<body>
 
@@ -365,7 +347,7 @@
 			</div>
 
 			<div class="demo">
-				Single Date mode: <input id="date-range13" size="40" value="2015-03-01">
+				Single Date mode: <input id="date-range13" size="40" value="2018-03-01">
 				<a href="#" class="show-option">Show Config</a>
 				<pre class="options">
 {
@@ -377,7 +359,7 @@
 
 
 			<div class="demo">
-				Single Date mode with single month: <input id="date-range13-2" size="40" value="2015-03-01">
+				Single Date mode with single month: <input id="date-range13-2" size="40" value="2018-03-01">
 				<a href="#" class="show-option">Show Config</a>
 				<pre class="options">
 {
@@ -711,28 +693,29 @@ $('#date-range16-reset').click(function(evt)
 				</pre>
 			</div>
 
-			<div class="demo" style="display: flex;">
-				Re-select field per one field (+ span, + autoClose): 
-			    <div id="date-range55">
-			        <span id="checkin"></span> <span id="checkout"></span>
-			    </div>
+			<div class="demo">
+				Re-select option: 
+			    <span id="date-range55"><input id="checkin" size="20" value="" readonly=""> to <input id="checkout" size="20" value="" readonly=""></span>
 				<a href="#" class="show-option">Show Config</a>
 				<pre class="options">
 {
     autoClose: true,
-    reSelectPerOne: true,
-    getValue: function()
-    {
-        if ($('#checkin').text() && $('#checkout').text() )
-            return $('#checkin').text() + ' to ' + $('#checkout').text();
-        else
-        	return '';
-        },
-    setValue: function(s,s1,s2)
-    {
-        $('#checkin').text(s1);
-        $('#checkout').text(s2);
-    }
+    quickReSelect: true,
+    separator : ' to ',
+    fromFieldId: 'checkin',
+    toFieldId: 'checkout',
+	getValue: function()
+	{
+		if ($('#checkin').val() && $('#checkout').val() )
+			return $('#checkin').val() + ' to ' + $('#checkout').val();
+		else
+			return '';
+	},
+	setValue: function(s,s1,s2)
+	{
+		$('#checkin').val(s1);
+		$('#checkout').val(s2);
+	}
 }
 				</pre>
 			</div>

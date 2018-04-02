@@ -501,25 +501,25 @@ $(function()
 		}
 	});
 
+	$('#checkin').val(moment().startOf('month').format('YYYY-MM-DD'));
+	$('#checkout').val(moment().endOf('month').format('YYYY-MM-DD'));
+
 	$('#date-range55').dateRangePicker(
 	{
-        autoClose: true,
-        reSelectPerOne: true,
-        separator : ' to ',
-        format:"MMM D, YYYY",
-        getValue: function()
-        {
-        	 if ($('#checkin').text() && $('#checkout').text() )
-        	 	return $('#checkin').text() + ' to ' + $('#checkout').text();
-        	 else
-        	 	return '';
-        },
-        setValue: function(s,s1,s2)
-        {
-        	$('#checkin').text(s1);
-        	$('#checkout').text(s2);
-        }
+	    autoClose: true,
+	    quickReSelect: true,
+	    separator : ' to ',
+		getValue: function()
+		{
+			if ($('#checkin').val() && $('#checkout').val() )
+				return $('#checkin').val() + ' to ' + $('#checkout').val();
+			else
+				return '';
+		},
+		setValue: function(s,s1,s2)
+		{
+			$('#checkin').val(s1);
+			$('#checkout').val(s2);
+		}
 	});
-
-
 });
