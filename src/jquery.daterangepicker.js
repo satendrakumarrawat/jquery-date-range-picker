@@ -2070,7 +2070,6 @@
             return generateSelect('year', generateSelectData(range, fullYear));
         }
 
-
         function generateSelectData(range, current, valueBeautifier) {
             var data = [];
             valueBeautifier = valueBeautifier || function(value) { return value; };
