@@ -702,8 +702,6 @@ $('#date-range16-reset').click(function(evt)
     autoClose: true,
     quickReSelect: true,
     separator : ' to ',
-    fromFieldId: 'checkin',
-    toFieldId: 'checkout',
 	getValue: function()
 	{
 		if ($('#checkin').val() && $('#checkout').val() )
@@ -715,6 +713,34 @@ $('#date-range16-reset').click(function(evt)
 	{
 		$('#checkin').val(s1);
 		$('#checkout').val(s2);
+	}
+}
+				</pre>
+			</div>
+
+			<div class="demo">
+				Illegal range option: 
+			    <span id="date-range56"><input id="checkin2" size="20" value="" readonly=""> to <input id="checkout2" size="20" value="" readonly=""></span>
+				<a href="#" class="show-option">Show Config</a>
+				<pre class="options">
+{
+    autoClose: true,
+    quickReSelect: true,
+    illegalRange: false,
+    separator : ' to ',
+    fromFieldId: 'checkin2',
+    toFieldId: 'checkout2',
+	getValue: function()
+	{
+		if ($('#checkin2').val() && $('#checkout2').val() )
+			return $('#checkin2').val() + ' to ' + $('#checkout2').val();
+		else
+			return '';
+	},
+	setValue: function(s,s1,s2)
+	{
+		$('#checkin2').val(s1);
+		$('#checkout2').val(s2);
 	}
 }
 				</pre>

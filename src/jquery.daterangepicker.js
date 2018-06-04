@@ -881,6 +881,7 @@
             fromFieldId: 'checkin',
             toFieldId: 'checkout',
             quickReSelect: false,
+            prevDates: null,
             hoveringTooltip: function(days, startTime, hoveringTime) {
                 return days > 1 ? days + ' ' + translate('days') : '';
             },
@@ -1542,6 +1543,11 @@
             showSelectedInfo();
             showSelectedDays();
             autoclose();
+
+            opt.prevDates = {
+                'date1': opt.start,
+                'date2': opt.end
+            };
         }
 
 
@@ -1863,7 +1869,8 @@
                     $(self).trigger('datepicker-change', {
                         'value': dateRange,
                         'date1': new Date(opt.start),
-                        'date2': new Date(opt.end)
+                        'date2': new Date(opt.end),
+                        'prev': opt.prevDates
                     });
                 }
             } else if (forceValid) {
@@ -1874,7 +1881,7 @@
         }
 
         function countDays(start, end) {
-            return Math.abs(moment(start).diff(moment(end), 'd')) + 1;
+            return start && end ? Math.abs(moment(start).diff(moment(end), 'd')) + 1 : 0;
         }
 
         function setDateRange(date1, date2, silent) {

@@ -522,4 +522,101 @@ $(function()
 			$('#checkout').val(s2);
 		}
 	});
+
+	var bookings = [
+        {
+            "_id": "7UB2R",
+            "status": 0,
+            "checkout": 1533877200,
+            "checkin": 1533538800
+        },
+        {
+            "_id": "9EG3X",
+            "status": 0,
+            "checkout": 1528952400,
+            "checkin": 1528614000
+        },
+        {
+            "_id": "MBHJP",
+            "status": 0,
+            "checkout": 1533186000,
+            "checkin": 1531724400
+        },
+        {
+            "_id": "NM36U",
+            "status": 0,
+            "checkout": 1532322000,
+            "checkin": 1531897200
+        },
+        {
+            "_id": "UEYUG",
+            "status": 0,
+            "checkout": 1534482000,
+            "checkin": 1534230000
+        }
+    ];
+
+	function check(time) {
+        var utc = moment(time);
+        if (bookings) {
+        	for (var i = 0; i < bookings.length; i++) {
+            	if (utc.isSameOrAfter(moment.unix(bookings[i].checkin), 'day') && utc.isSameOrBefore(moment.unix(bookings[i].checkout), 'day')) {
+                	return false;
+        		}
+    		}
+    	}
+    	return true;
+    }
+
+	$('#date-range56').dateRangePicker(
+	{
+	    autoClose: true,
+	    stickyMonths: true,
+	    quickReSelect: true,
+	    separator : ' to ',
+        fromFieldId: 'checkin2',
+        toFieldId: 'checkout2',
+	    beforeShowDay: function (t) {
+			//disable booked and past days
+            var valid = !((new Date().getTime() - t.getTime()) >= (24 * 60 * 60 * 1000));
+            var _class = '';
+            var _tooltip = valid ? '' : '';
+
+            if (bookings && !check(t)) {
+                valid = false;
+                _tooltip = 'Already Booked';
+            }
+            return [valid, _class, _tooltip];
+
+        },
+		getValue: function()
+		{
+			if ($('#checkin2').val() && $('#checkout2').val() )
+				return $('#checkin2').val() + ' to ' + $('#checkout2').val();
+			else
+				return '';
+		},
+		setValue: function(s,s1,s2)
+		{
+			$('#checkin2').val(s1);
+			$('#checkout2').val(s2);
+		}
+	})
+	.bind('datepicker-change',function(event, obj)
+	{
+		if (bookings) {
+        	for (var i = 0; i < bookings.length; i++) {
+            	if (moment.unix(bookings[i].checkin).isBetween(obj.date1, obj.date2) && moment.unix(bookings[i].checkout).isBetween(obj.date1, obj.date2)) {
+                	$('#date-range56').data('dateRangePicker').clear();
+					
+					if (moment(obj.date1).isSame(obj.prev.date1, 'day')) {
+                		$('#date-range56').data('dateRangePicker').setStart(obj.date2);
+					}
+					else {
+                		$('#date-range56').data('dateRangePicker').setStart(obj.date1);
+					}
+        		}
+    		}
+    	}
+	});
 });
