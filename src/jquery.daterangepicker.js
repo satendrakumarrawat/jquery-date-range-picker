@@ -1699,7 +1699,7 @@
                     else if (opt.quickReSelect) {
                         var days = countDays(hoverTime, opt.start || opt.end);
 
-                        if (opt.hoveringTooltip) {
+                        if (!isNaN(days) && opt.hoveringTooltip) {
                             if (typeof opt.hoveringTooltip == 'function') {
                                 tooltip = opt.hoveringTooltip(days, opt.start || opt.end, hoverTime);
                             } else if (opt.hoveringTooltip === true && days > 1) {

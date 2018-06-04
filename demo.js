@@ -501,8 +501,8 @@ $(function()
 		}
 	});
 
-	$('#checkin').val(moment().startOf('month').format('YYYY-MM-DD'));
-	$('#checkout').val(moment().endOf('month').format('YYYY-MM-DD'));
+	//$('#checkin').val(moment().startOf('month').format('YYYY-MM-DD'));
+	//$('#checkout').val(moment().endOf('month').format('YYYY-MM-DD'));
 
 	$('#date-range55').dateRangePicker(
 	{
