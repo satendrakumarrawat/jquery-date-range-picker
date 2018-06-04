@@ -1657,7 +1657,7 @@
 
                             }
                             // choose end
-                            else {
+                            else if (opt.start && !opt.end) {
                                 if ((time < hoverTime && time > opt.start) || (hoverTime < opt.start && time > hoverTime && time < opt.start)) {
                                     $(this).addClass('hovering').removeClass('out-range');
                                 }
@@ -1699,7 +1699,7 @@
                     else if (opt.quickReSelect) {
                         var days = countDays(hoverTime, opt.start || opt.end);
 
-                        if (!isNaN(days) && opt.hoveringTooltip) {
+                        if (opt.hoveringTooltip) {
                             if (typeof opt.hoveringTooltip == 'function') {
                                 tooltip = opt.hoveringTooltip(days, opt.start || opt.end, hoverTime);
                             } else if (opt.hoveringTooltip === true && days > 1) {
