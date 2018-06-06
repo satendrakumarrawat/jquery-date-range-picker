@@ -937,8 +937,6 @@
         var domChangeTimer;
 
         $(this).unbind('.datepicker').bind('click.datepicker', function(evt) {
-            opt.checkIn = opt.start;
-            opt.checkOut = opt.end;
 
             var isOpen = box.is(':visible');
             if (!isOpen) open(opt.duration);
@@ -1324,6 +1322,9 @@
         }
 
         function quickReSelect(evt){
+            opt.checkIn = opt.start;
+            opt.checkOut = opt.end;
+
             if (!opt.quickReSelect) return;
 
             opt.initiatedFieldId = evt.target.id;
@@ -2216,7 +2217,7 @@
         }
 
         function redrawDatePicker() {
-            if (opt.initiatedFieldId === opt.toFieldId) {
+            if (opt.initiatedFieldId === opt.toFieldId && opt.checkIn && opt.checkOut && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > 1) {
                 opt.month2 = new Date(opt.checkOut);
                 opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
 
