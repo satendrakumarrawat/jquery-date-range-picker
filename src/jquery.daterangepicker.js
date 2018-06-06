@@ -881,7 +881,8 @@
             fromFieldId: 'checkin',
             toFieldId: 'checkout',
             quickReSelect: false,
-            prevDates: null,
+            occupiedDates: null,
+            initiatedFieldId: null,
             hoveringTooltip: function(days, startTime, hoveringTime) {
                 return days > 1 ? days + ' ' + translate('days') : '';
             },
@@ -902,6 +903,8 @@
 
         opt.start = false;
         opt.end = false;
+        opt.checkIn = false;
+        opt.checkOut = false;
 
         opt.startWeek = false;
 
@@ -916,6 +919,8 @@
         if (opt.singleMonth) opt.stickyMonths = false;
 
         if (!opt.showTopbar) opt.autoClose = true;
+
+        if (opt.quickReSelect) opt.autoClose = true;
 
         if (opt.startDate && typeof opt.startDate == 'string') opt.startDate = moment(opt.startDate, opt.format).toDate();
         if (opt.endDate && typeof opt.endDate == 'string') opt.endDate = moment(opt.endDate, opt.format).toDate();
@@ -932,8 +937,12 @@
         var domChangeTimer;
 
         $(this).unbind('.datepicker').bind('click.datepicker', function(evt) {
+            opt.checkIn = opt.start;
+            opt.checkOut = opt.end;
+
             var isOpen = box.is(':visible');
             if (!isOpen) open(opt.duration);
+
             quickReSelect(evt);
 
         }).bind('change.datepicker', function(evt) {
@@ -987,6 +996,7 @@
             redraw: redrawDatePicker,
             getDatePicker: getDatePicker,
             resetMonthsView: resetMonthsView,
+            occupiedDates: occupiedDates,
             destroy: function() {
                 $(self).unbind('.datepicker');
                 $(self).data('dateRangePicker', '');
@@ -1316,13 +1326,13 @@
         function quickReSelect(evt){
             if (!opt.quickReSelect) return;
 
-            var initiatedFieldId = evt.target.id;
+            opt.initiatedFieldId = evt.target.id;
 
-            if (initiatedFieldId === opt.fromFieldId) {
+            if (opt.initiatedFieldId === opt.fromFieldId) {
                 opt.start = false;
             }
             
-            if (initiatedFieldId === opt.toFieldId) {
+            if (opt.initiatedFieldId === opt.toFieldId) {
                 $(".date-picker-wrapper").css({
                     top: $("#"+opt.toFieldId).offset().bottom,
                     left: $("#"+opt.toFieldId).offset().left
@@ -1430,6 +1440,8 @@
         function clearSelection() {
             opt.start = false;
             opt.end = false;
+            opt.checkIn = false;
+            opt.checkOut = false;
             box.find('.day.checked').removeClass('checked');
             box.find('.day.last-date-selected').removeClass('last-date-selected');
             box.find('.day.first-date-selected').removeClass('first-date-selected');
@@ -1530,12 +1542,17 @@
             opt.start = parseInt(opt.start);
             opt.end = parseInt(opt.end);
 
+            opt.checkIn = opt.start;
+            opt.checkOut = opt.end;
+
             clearHovering();
             if (opt.start && !opt.end) {
                 $(self).trigger('datepicker-first-date-selected', {
                     'date1': new Date(opt.start)
                 });
                 dayHovering(day);
+
+                redrawDatePicker();
             }
             updateSelectableRange(time);
 
@@ -1904,6 +1921,9 @@
             opt.start = date1.getTime();
             opt.end = date2.getTime();
 
+            opt.checkIn = opt.start;
+            opt.checkOut = opt.end;
+
             if (opt.time.enabled) {
                 renderTime('time1', date1);
                 renderTime('time2', date2);
@@ -1951,6 +1971,7 @@
             }
 
             opt.start = date1.getTime();
+            opt.checkIn = opt.start;
 
 
             if (opt.time.enabled) {
@@ -1968,19 +1989,19 @@
         }
 
         function showSelectedDays() {
-            if (!opt.start && !opt.end) return;
+            if (!opt.checkIn && !opt.checkOut) return;
             box.find('.day').each(function() {
                 var time = parseInt($(this).attr('time')),
-                    start = opt.start,
-                    end = opt.end;
+                    start = opt.checkIn,
+                    end = opt.checkOut;
                 if (opt.time.enabled) {
                     time = moment(time).startOf('day').valueOf();
                     start = moment(start || moment().valueOf()).startOf('day').valueOf();
                     end = moment(end || moment().valueOf()).startOf('day').valueOf();
                 }
                 if (
-                    (opt.start && opt.end && end >= time && start <= time) ||
-                    (opt.start && !opt.end && moment(start).format('YYYY-MM-DD') == moment(time).format('YYYY-MM-DD'))
+                    (opt.checkIn && opt.checkOut && end >= time && start <= time) ||
+                    (opt.checkIn && !opt.checkOut && moment(start).format('YYYY-MM-DD') == moment(time).format('YYYY-MM-DD'))
                 ) {
                     $(this).addClass('checked');
 
@@ -1992,13 +2013,13 @@
                 }
 
                 //add first-date-selected class name to the first date selected
-                if (opt.start && moment(start).format('YYYY-MM-DD') == moment(time).format('YYYY-MM-DD')) {
+                if (opt.checkIn && moment(start).format('YYYY-MM-DD') == moment(time).format('YYYY-MM-DD')) {
                     $(this).addClass('first-date-selected');
                 } else {
                     $(this).removeClass('first-date-selected');
                 }
                 //add last-date-selected
-                if (opt.end && moment(end).format('YYYY-MM-DD') == moment(time).format('YYYY-MM-DD')) {
+                if (opt.checkOut && moment(end).format('YYYY-MM-DD') == moment(time).format('YYYY-MM-DD')) {
                     $(this).addClass('last-date-selected');
                 } else {
                     $(this).removeClass('last-date-selected');
@@ -2195,6 +2216,13 @@
         }
 
         function redrawDatePicker() {
+            if (opt.initiatedFieldId === opt.toFieldId) {
+                opt.month2 = new Date(opt.checkOut);
+                opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
+
+                opt.month1.setDate(1);
+                opt.month2.setDate(1);
+            }
             showMonth(opt.month1, 'month1');
             showMonth(opt.month2, 'month2');
         }
@@ -2522,6 +2550,7 @@
                     valid: valid
                 });
             }
+
             var html = [];
             for (var week = 0; week < 6; week++) {
                 if (days[week * 7].type == 'nextMonth') break;
@@ -2539,6 +2568,25 @@
                         today.extraClass = _r[1] || '';
                         today.tooltip = _r[2] || '';
                         if (today.tooltip !== '') today.extraClass += ' has-tooltip ';
+                    }
+
+                    if (opt.occupiedDates) {
+                        for (var i = 0; i < opt.occupiedDates.length; i++) {
+                            var _checkIn = moment.unix(opt.occupiedDates[i].checkin),
+                                _checkOut = moment.unix(opt.occupiedDates[i].checkout);
+
+                            if (today.valid && opt.checkIn && !opt.checkOut && moment(today.date).isBefore(opt.checkIn)) {
+                                today.valid = false;
+                            }
+
+                            else if (today.valid && opt.checkIn && !opt.checkOut && moment(today.date).isAfter(opt.checkIn) && moment(today.date).isAfter(_checkOut) && moment(_checkOut).isAfter(opt.checkIn)) {
+                                today.valid = false;
+                            }
+
+                            else if (today.valid && moment(today.date).isBetween(_checkIn, _checkOut, 'day', '[]')) {
+                                today.valid = false;
+                            }
+                        }
                     }
 
                     var todayDivAttr = {
@@ -2632,6 +2680,12 @@
 
             showSelectedDays();
             showGap();
+        }
+
+        function occupiedDates(dates) {
+            opt.occupiedDates = dates;
+            redrawDatePicker();
+            showSelectedDays();
         }
 
     };

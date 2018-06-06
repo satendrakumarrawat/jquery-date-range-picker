@@ -555,40 +555,26 @@ $(function()
             "checkin": 1534230000
         }
     ];
-
-	function check(time) {
-        var utc = moment(time);
-        if (bookings) {
-        	for (var i = 0; i < bookings.length; i++) {
-            	if (utc.isSameOrAfter(moment.unix(bookings[i].checkin), 'day') && utc.isSameOrBefore(moment.unix(bookings[i].checkout), 'day')) {
-                	return false;
-        		}
-    		}
-    	}
-    	return true;
-    }
+    
+    $(document).on('click', '.reset', function() {
+        $('.month-wrapper').find('.day.in-range').removeClass('in-range');
+        $('#date-range56').data('dateRangePicker').clear();
+    });
 
 	$('#date-range56').dateRangePicker(
 	{
 	    autoClose: true,
 	    stickyMonths: true,
 	    quickReSelect: true,
+	    startDate: new Date(),
 	    separator : ' to ',
         fromFieldId: 'checkin2',
         toFieldId: 'checkout2',
-	    beforeShowDay: function (t) {
-			//disable booked and past days
-            var valid = !((new Date().getTime() - t.getTime()) >= (24 * 60 * 60 * 1000));
-            var _class = '';
-            var _tooltip = valid ? '' : '';
-
-            if (bookings && !check(t)) {
-                valid = false;
-                _tooltip = 'Already Booked';
-            }
-            return [valid, _class, _tooltip];
-
-        },
+        customTopBar: `<span class='calendar_current_selection'></span>
+        	<button class="reset">
+        		<span class="reset-text">Reset</span>
+        	</button>
+        <div class="close-calendar"></div>`,
 		getValue: function()
 		{
 			if ($('#checkin2').val() && $('#checkout2').val() )
@@ -602,21 +588,27 @@ $(function()
 			$('#checkout2').val(s2);
 		}
 	})
+	.bind('datepicker-open',function(event, obj)
+	{
+        setTimeout(function(){
+        	$('#date-range56').data('dateRangePicker').occupiedDates(bookings);
+        }, 500);
+	})
 	.bind('datepicker-change',function(event, obj)
 	{
 		if (bookings) {
-        	for (var i = 0; i < bookings.length; i++) {
-            	if (moment.unix(bookings[i].checkin).isBetween(obj.date1, obj.date2) && moment.unix(bookings[i].checkout).isBetween(obj.date1, obj.date2)) {
-                	$('#date-range56').data('dateRangePicker').clear();
-					
-					if (moment(obj.date1).isSame(obj.prev.date1, 'day')) {
-                		$('#date-range56').data('dateRangePicker').setStart(obj.date2);
+			for (var i = 0; i < bookings.length; i++) {
+				if (moment.unix(bookings[i].checkin).isBetween(obj.date1, obj.date2) || moment.unix(bookings[i].checkout).isBetween(obj.date1, obj.date2)) {
+					$('#date-range56').data('dateRangePicker').clear();
+
+					if (moment(obj.date1).isSame(obj.prev.date1, 'day') || moment(obj.date1).isSame(obj.prev.date2, 'day')) {
+						$('#date-range56').data('dateRangePicker').setStart(obj.date2);
 					}
-					else {
-                		$('#date-range56').data('dateRangePicker').setStart(obj.date1);
+					 else {
+					 	$('#date-range56').data('dateRangePicker').setStart(obj.date1);
+					 }
 					}
-        		}
-    		}
-    	}
+				}
+			}
 	});
 });
