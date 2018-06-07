@@ -2026,11 +2026,20 @@
                 renderTime('time1', date1);
 
             }
-            showMonth(date1, 'month1');
-            if (opt.singleMonth !== true) {
-                var date2 = nextMonth(date1);
-                showMonth(date2, 'month2');
+
+            if (opt.displaySizeMonths === 2) {
+                showMonth(date1, 'month1');
+
+                if (opt.singleMonth !== true) {
+                    var date2 = nextMonth(date1);
+                    showMonth(date2, 'month2');
+                }
             }
+            else if (opt.displaySizeMonths > 2) {
+                // skip ?
+            }
+
+
             showGap();
             showSelectedInfo();
             autoclose();
@@ -2553,10 +2562,10 @@
 
         function isMonthOutOfBounds(month) {
             month = moment(month);
-            if (opt.startDate && month.endOf('month').isBefore(opt.startDate)) {
+            if (opt.startDate && month.endOf('month').isBefore(opt.startDate) && opt.displaySizeMonths === 2) {
                 return true;
             }
-            if (opt.endDate && month.startOf('month').isAfter(opt.endDate)) {
+            if (opt.endDate && month.startOf('month').isAfter(opt.endDate) && opt.displaySizeMonths === 2) {
                 return true;
             }
             return false;

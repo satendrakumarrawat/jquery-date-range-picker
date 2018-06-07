@@ -599,17 +599,18 @@ $(function()
 	{
 		if (bookings) {
 			for (var i = 0; i < bookings.length; i++) {
-				if (moment.unix(bookings[i].checkin).isBetween(obj.date1, obj.date2) || moment.unix(bookings[i].checkout).isBetween(obj.date1, obj.date2)) {
+				if (obj.date1 && (moment.unix(bookings[i].checkin).isBetween(obj.date1, obj.date2) || moment.unix(bookings[i].checkout).isBetween(obj.date1, obj.date2))) {
 					$('#date-range56').data('dateRangePicker').clear();
 
 					if (moment(obj.date1).isSame(obj.prev.date1, 'day') || moment(obj.date1).isSame(obj.prev.date2, 'day')) {
 						$('#date-range56').data('dateRangePicker').setStart(obj.date2);
 					}
-					 else {
+					else {
 					 	$('#date-range56').data('dateRangePicker').setStart(obj.date1);
-					 }
 					}
+					$('#date-range56').data('dateRangePicker').redraw();
 				}
 			}
+		}
 	});
 });
