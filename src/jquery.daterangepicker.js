@@ -883,6 +883,7 @@
             quickReSelect: false,
             occupiedDates: null,
             initiatedFieldId: null,
+            displaySizeMonths: 2,
             hoveringTooltip: function(days, startTime, hoveringTime) {
                 return days > 1 ? days + ' ' + translate('days') : '';
             },
@@ -921,6 +922,10 @@
         if (!opt.showTopbar) opt.autoClose = true;
 
         if (opt.quickReSelect) opt.autoClose = true;
+
+        if (opt.displaySizeMonths < 2) opt.displaySizeMonths = 2;
+
+        if (opt.displaySizeMonths > 2) opt.stickyMonths = true;
 
         if (opt.startDate && typeof opt.startDate == 'string') opt.startDate = moment(opt.startDate, opt.format).toDate();
         if (opt.endDate && typeof opt.endDate == 'string') opt.endDate = moment(opt.endDate, opt.format).toDate();
@@ -1112,8 +1117,29 @@
                 var nextMonth2 = nextMonth(opt.month2);
                 if (isMonthOutOfBounds(nextMonth2)) return;
                 if (!opt.singleDate && compare_month(nextMonth1, nextMonth2) >= 0) return;
-                showMonth(nextMonth1, 'month1');
-                showMonth(nextMonth2, 'month2');
+
+                if (opt.displaySizeMonths === 2) {
+                    showMonth(nextMonth1, 'month1');
+                    showMonth(nextMonth2, 'month2');
+                }
+                else if (opt.displaySizeMonths > 2) {
+
+                    nextMonth1 = moment(nextMonth2).add(opt.displaySizeMonths - 2, 'months');
+                    nextMonth2 = moment(nextMonth1).add(1, 'months');
+
+                    showMonth(nextMonth1, 'month1');
+                    showMonth(nextMonth2, 'month2');
+
+                    var dateMonth = moment(nextMonth2).add(1, 'months');
+
+                    for (var i = 3; i <= opt.displaySizeMonths; i++) {
+
+                        showMonth(dateMonth.toDate(), 'month'+i);
+
+                        dateMonth.add(1, 'months');
+                    }
+                }
+
                 showSelectedDays();
             }
 
@@ -1139,8 +1165,29 @@
                 var prevMonth2 = prevMonth(opt.month2);
                 if (isMonthOutOfBounds(prevMonth1)) return;
                 if (!opt.singleDate && compare_month(prevMonth2, prevMonth1) <= 0) return;
-                showMonth(prevMonth2, 'month2');
-                showMonth(prevMonth1, 'month1');
+
+                if (opt.displaySizeMonths === 2) {
+                    showMonth(prevMonth2, 'month2');
+                    showMonth(prevMonth1, 'month1');
+                }
+                else if (opt.displaySizeMonths > 2) {
+
+                    prevMonth1 = moment(prevMonth1).subtract(opt.displaySizeMonths - 1, 'months');
+                    prevMonth2 = moment(prevMonth1).add(1, 'months');
+
+                    showMonth(prevMonth1, 'month1');
+                    showMonth(prevMonth2, 'month2');
+
+                    var dateMonth = moment(prevMonth2).add(1, 'months');
+
+                    for (var i = 3; i <= opt.displaySizeMonths; i++) {
+
+                        showMonth(dateMonth.toDate(), 'month'+i);
+
+                        dateMonth.add(1, 'months');
+                    }
+                }
+
                 showSelectedDays();
             }
 
@@ -2217,15 +2264,34 @@
         }
 
         function redrawDatePicker() {
-            if (opt.initiatedFieldId === opt.toFieldId && opt.checkIn && opt.checkOut && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > 1) {
-                opt.month2 = new Date(opt.checkOut);
-                opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
+            if (opt.initiatedFieldId === opt.toFieldId && opt.checkIn && opt.checkOut) {
+
+                if (opt.displaySizeMonths === 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > 1) {
+                    opt.month2 = new Date(opt.checkOut);
+                    opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
+                }
+                else if (opt.displaySizeMonths > 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > opt.displaySizeMonths) {
+                    opt.month2 = moment(opt.checkOut).subtract(opt.displaySizeMonths - 2, 'months').toDate();
+                    opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
+                }
 
                 opt.month1.setDate(1);
                 opt.month2.setDate(1);
             }
             showMonth(opt.month1, 'month1');
             showMonth(opt.month2, 'month2');
+
+            if (opt.displaySizeMonths > 2) {
+
+                var dateMonth = moment(opt.month2).add(1, 'months');
+
+                for (var i = 3; i <= opt.displaySizeMonths; i++) {
+
+                    showMonth(dateMonth.toDate(), 'month'+i);
+
+                    dateMonth.add(1, 'months');
+                }
+            }
         }
 
         function compare_month(m1, m2) {
@@ -2340,6 +2406,35 @@
                     '</table>';
 
             }
+
+            if (opt.displaySizeMonths > 2) {
+                for (var i = 3; i <= opt.displaySizeMonths; i++) {
+
+                    if (i % 2 !== 0) {
+                        html += '<div class="dp-clearfix"></div>';
+                    }
+
+                    html += '<table class="month'+i+'" cellspacing="0" border="0" cellpadding="0">' +
+                        '   <thead>' +
+                        '   <tr class="caption">' +
+                        '       <th>' +
+                        '       </th>' +
+                        '       <th colspan="' + _colspan + '" class="month-name">' +
+                        '      </th>' +
+                        '       <th>' +
+                        '       </th>' +
+                        '   </tr>' +
+                        '   <tr class="week-name">' + getWeekHead() +
+                        '   </thead>' +
+                        '   <tbody></tbody>' +
+                        '</table>';
+
+                    if (i % 2 !== 0) {
+                        html += '<div class="gap">' + getGapHTML() + '</div>';
+                    }
+                }
+            }
+
             //+'</div>'
             html += '<div class="dp-clearfix"></div>' +
                 '<div class="time">' +

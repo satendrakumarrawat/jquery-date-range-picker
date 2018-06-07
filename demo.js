@@ -570,6 +570,7 @@ $(function()
 	    separator : ' to ',
         fromFieldId: 'checkin2',
         toFieldId: 'checkout2',
+        displaySizeMonths: 6,
         customTopBar: `<span class='calendar_current_selection'></span>
         	<button class="reset">
         		<span class="reset-text">Reset</span>
