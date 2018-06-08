@@ -555,11 +555,6 @@ $(function()
             "checkin": 1534230000
         }
     ];
-    
-    $(document).on('click', '.reset', function() {
-        $('.month-wrapper').find('.day.in-range').removeClass('in-range');
-        $('#date-range56').data('dateRangePicker').clear();
-    });
 
 	$('#date-range56').dateRangePicker(
 	{
@@ -572,9 +567,9 @@ $(function()
         toFieldId: 'checkout2',
         displaySizeMonths: 6,
         customTopBar: `<span class='calendar_current_selection'></span>
-        	<button class="reset">
-        		<span class="reset-text">Reset</span>
-        	</button>
+        	<div class="reset">
+        		Reset
+        	</div>
         <div class="close-calendar"></div>`,
 		getValue: function()
 		{
@@ -599,7 +594,7 @@ $(function()
 	{
 		if (bookings) {
 			for (var i = 0; i < bookings.length; i++) {
-				if (obj.date1 && (moment.unix(bookings[i].checkin).isBetween(obj.date1, obj.date2) || moment.unix(bookings[i].checkout).isBetween(obj.date1, obj.date2))) {
+				if (obj.date1 && (moment.unix(bookings[i].checkin).isBetween(obj.date1, obj.date2, 'day', '[]') || moment.unix(bookings[i].checkout).isBetween(obj.date1, obj.date2, 'day', '[]'))) {
 					$('#date-range56').data('dateRangePicker').clear();
 
 					if (moment(obj.date1).isSame(obj.prev.date1, 'day') || moment(obj.date1).isSame(obj.prev.date2, 'day')) {
@@ -608,9 +603,16 @@ $(function()
 					else {
 					 	$('#date-range56').data('dateRangePicker').setStart(obj.date1);
 					}
+
 					$('#date-range56').data('dateRangePicker').redraw();
 				}
 			}
 		}
+	});
+
+	$(document).on('click', '.reset', function() {
+	    console.log('click');
+	    $('.month-wrapper').find('.day.in-range').removeClass('in-range');
+	    $('#date-range56').data('dateRangePicker').clear();
 	});
 });

@@ -1595,12 +1595,26 @@
 
             clearHovering();
             if (opt.start && !opt.end) {
-                $(self).trigger('datepicker-first-date-selected', {
-                    'date1': new Date(opt.start)
-                });
-                dayHovering(day);
+                var startIsValid = true;
 
-                redrawDatePicker();
+                if (opt.occupiedDates) {
+                    for (var i = 0; i < opt.occupiedDates.length; i++) {
+                        if (opt.start && moment.unix(opt.occupiedDates[i].checkin).subtract(1, 'day').isSame(opt.start, 'day')) {
+                            opt.start = false;
+                            startIsValid = false;
+                            clearSelection();
+                        }
+                    }
+                }
+
+                if (startIsValid) {
+                    $(self).trigger('datepicker-first-date-selected', {
+                        'date1': new Date(opt.start)
+                    });
+                    dayHovering(day);
+
+                    redrawDatePicker();
+                }
             }
             updateSelectableRange(time);
 
@@ -2777,6 +2791,18 @@
             } else {
                 showMonth(time, 'month1');
                 showMonth(nextMonth(time), 'month2');
+            }
+
+            if (opt.displaySizeMonths > 2) {
+
+                var dateMonth = moment(opt.month2).add(1, 'months');
+
+                for (var i = 3; i <= opt.displaySizeMonths; i++) {
+
+                    showMonth(dateMonth.toDate(), 'month'+i);
+
+                    dateMonth.add(1, 'months');
+                }
             }
 
             if (opt.singleDate) {
