@@ -610,6 +610,60 @@ $(function()
 		}
 	});
 
+	$('#date-range57').dateRangePicker(
+	{
+	    autoClose: true,
+	    stickyMonths: true,
+	    quickReSelect: true,
+	    startDate: new Date(),
+	    separator : ' to ',
+        fromFieldId: 'checkin3',
+        toFieldId: 'checkout3',
+        displaySizeMonths: 1,
+        customTopBar: `<span class='calendar_current_selection'></span>
+        	<div class="reset">
+        		Reset
+        	</div>
+        <div class="close-calendar"></div>`,
+		getValue: function()
+		{
+			if ($('#checkin3').val() && $('#checkout3').val() )
+				return $('#checkin3').val() + ' to ' + $('#checkout3').val();
+			else
+				return '';
+		},
+		setValue: function(s,s1,s2)
+		{
+			$('#checkin3').val(s1);
+			$('#checkout3').val(s2);
+		}
+	})
+	.bind('datepicker-open',function(event, obj)
+	{
+        setTimeout(function(){
+        	$('#date-range57').data('dateRangePicker').occupiedDates(bookings);
+        }, 500);
+	})
+	.bind('datepicker-change',function(event, obj)
+	{
+		if (bookings) {
+			for (var i = 0; i < bookings.length; i++) {
+				if (obj.date1 && (moment.unix(bookings[i].checkin).isBetween(obj.date1, obj.date2, 'day', '[]') || moment.unix(bookings[i].checkout).isBetween(obj.date1, obj.date2, 'day', '[]'))) {
+					$('#date-range57').data('dateRangePicker').clear();
+
+					if (moment(obj.date1).isSame(obj.prev.date1, 'day') || moment(obj.date1).isSame(obj.prev.date2, 'day')) {
+						$('#date-range57').data('dateRangePicker').setStart(obj.date2);
+					}
+					else {
+					 	$('#date-range57').data('dateRangePicker').setStart(obj.date1);
+					}
+
+					$('#date-range57').data('dateRangePicker').redraw();
+				}
+			}
+		}
+	});
+
 	$(document).on('click', '.reset', function() {
 	    console.log('click');
 	    $('.month-wrapper').find('.day.in-range').removeClass('in-range');

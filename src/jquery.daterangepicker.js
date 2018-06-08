@@ -884,6 +884,7 @@
             occupiedDates: null,
             initiatedFieldId: null,
             displaySizeMonths: 2,
+            allowScrollOutOfBounds: true,
             hoveringTooltip: function(days, startTime, hoveringTime) {
                 return days > 1 ? days + ' ' + translate('days') : '';
             },
@@ -917,13 +918,13 @@
 
         //show one month on mobile devices
         if (opt.singleMonth == 'auto') opt.singleMonth = $(window).width() < 480;
-        if (opt.singleMonth) opt.stickyMonths = false;
+        if (opt.singleMonth || opt.displaySizeMonths === 1) opt.stickyMonths = false;
 
         if (!opt.showTopbar) opt.autoClose = true;
 
         if (opt.quickReSelect) opt.autoClose = true;
 
-        if (opt.displaySizeMonths < 2) opt.displaySizeMonths = 2;
+        if (opt.displaySizeMonths < 1) opt.displaySizeMonths = 2;
 
         if (opt.displaySizeMonths > 2) opt.stickyMonths = true;
 
@@ -1073,7 +1074,7 @@
                 defaultTopText = translate('default-default');
 
             box.find('.default-top').html(defaultTopText.replace(/\%d/, opt.minDays).replace(/\%d/, opt.maxDays));
-            if (opt.singleMonth) {
+            if (opt.singleMonth || opt.displaySizeMonths === 1) {
                 box.addClass('single-month');
             } else {
                 box.addClass('two-months');
@@ -1107,7 +1108,7 @@
                 var isMonth2 = $(self).parents('table').hasClass('month2');
                 var month = isMonth2 ? opt.month2 : opt.month1;
                 month = nextMonth(month);
-                if (!opt.singleMonth && !opt.singleDate && !isMonth2 && compare_month(month, opt.month2) >= 0 || isMonthOutOfBounds(month)) return;
+                if (!opt.singleMonth && !opt.singleDate && opt.displaySizeMonths !== 1 && !isMonth2 && compare_month(month, opt.month2) >= 0 || isMonthOutOfBounds(month)) return;
                 showMonth(month, isMonth2 ? 'month2' : 'month1');
                 showGap();
             }
@@ -1377,6 +1378,11 @@
             opt.initiatedFieldId = evt.target.id;
 
             if (opt.initiatedFieldId === opt.fromFieldId) {
+                $(".date-picker-wrapper").css({
+                    top: $("#"+opt.fromFieldId).offset().bottom,
+                    left: $("#"+opt.fromFieldId).offset().left
+                }); 
+
                 opt.start = false;
             }
             
@@ -2289,7 +2295,10 @@
         function redrawDatePicker() {
             if (opt.initiatedFieldId === opt.toFieldId && opt.checkIn && opt.checkOut) {
 
-                if (opt.displaySizeMonths === 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > 1) {
+                if (opt.displaySizeMonths === 1 && !moment(opt.checkOut).isSame(moment(opt.checkIn), 'months')) {
+                    opt.month1 = new Date(opt.checkOut);
+                }
+                else if (opt.displaySizeMonths === 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > 1) {
                     opt.month2 = new Date(opt.checkOut);
                     opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
                 }
@@ -2302,7 +2311,10 @@
                 opt.month2.setDate(1);
             }
             showMonth(opt.month1, 'month1');
-            showMonth(opt.month2, 'month2');
+
+            if (opt.displaySizeMonths >= 2) {
+                showMonth(opt.month2, 'month2');
+            }
 
             if (opt.displaySizeMonths > 2) {
 
@@ -2354,7 +2366,7 @@
         function createDom() {
             var html = '<div class="date-picker-wrapper';
             if (opt.extraClass) html += ' ' + opt.extraClass + ' ';
-            if (opt.singleDate) html += ' single-date ';
+            if (opt.singleDate || opt.displaySizeMonths === 1) html += ' single-date ';
             if (!opt.showShortcuts) html += ' no-shortcuts ';
             if (!opt.showTopbar) html += ' no-topbar ';
             if (opt.customTopBar) html += ' custom-topbar ';
@@ -2401,7 +2413,7 @@
                 '               <th colspan="' + _colspan + '" class="month-name">' +
                 '               </th>' +
                 '               <th>' +
-                (opt.singleDate || !opt.stickyMonths ? '<span class="next">' + arrowNext + '</span>' : '') +
+                (opt.singleDate || !opt.stickyMonths || opt.displaySizeMonths === 1 ? '<span class="next">' + arrowNext + '</span>' : '') +
                 '               </th>' +
                 '           </tr>' +
                 '           <tr class="week-name">' + getWeekHead() +
@@ -2409,7 +2421,7 @@
                 '       <tbody></tbody>' +
                 '   </table>';
 
-            if (hasMonth2()) {
+            if (hasMonth2() && opt.displaySizeMonths >= 2) {
                 html += '<div class="gap">' + getGapHTML() + '</div>' +
                     '<table class="month2" cellspacing="0" border="0" cellpadding="0">' +
                     '   <thead>' +
@@ -2576,10 +2588,10 @@
 
         function isMonthOutOfBounds(month) {
             month = moment(month);
-            if (opt.startDate && month.endOf('month').isBefore(opt.startDate) && opt.displaySizeMonths === 2) {
+            if (opt.startDate && month.endOf('month').isBefore(opt.startDate) && !opt.allowScrollOutOfBounds) {
                 return true;
             }
-            if (opt.endDate && month.startOf('month').isAfter(opt.endDate) && opt.displaySizeMonths === 2) {
+            if (opt.endDate && month.startOf('month').isAfter(opt.endDate) && !opt.allowScrollOutOfBounds) {
                 return true;
             }
             return false;

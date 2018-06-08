@@ -746,6 +746,34 @@ $('#date-range16-reset').click(function(evt)
 				</pre>
 			</div>
 
+			<div class="demo">
+				Single month with range:
+			    <span id="date-range57"><input id="checkin3" size="20" value="" readonly=""> to <input id="checkout3" size="20" value="" readonly=""></span>
+				<a href="#" class="show-option">Show Config</a>
+				<pre class="options">
+{
+    autoClose: true,
+    quickReSelect: true,
+    illegalRange: false,
+    separator : ' to ',
+    fromFieldId: 'checkin2',
+    toFieldId: 'checkout2',
+	getValue: function()
+	{
+		if ($('#checkin2').val() && $('#checkout2').val() )
+			return $('#checkin2').val() + ' to ' + $('#checkout2').val();
+		else
+			return '';
+	},
+	setValue: function(s,s1,s2)
+	{
+		$('#checkin2').val(s1);
+		$('#checkout2').val(s2);
+	}
+}
+				</pre>
+			</div>
+
             <h2 id="configuration">Configuration</h2>
 			<pre><b>Usage:</b> $('#dom-id').dateRangePicker(configObject);</pre>
 			<p>
