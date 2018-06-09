@@ -918,17 +918,15 @@
 
         //show one month on mobile devices
         if (opt.singleMonth == 'auto') opt.singleMonth = $(window).width() < 480;
-        if (opt.singleMonth || opt.displaySizeMonths === 1) opt.stickyMonths = false;
+        if (opt.displaySizeMonths < 2) opt.singleMonth = true;
+
+        if (opt.singleMonth) opt.stickyMonths = false;
 
         if (!opt.showTopbar) opt.autoClose = true;
 
         if (opt.quickReSelect) opt.autoClose = true;
 
-        if (opt.singleMonth) opt.displaySizeMonths = 1;
-
-        if (opt.displaySizeMonths < 1) opt.displaySizeMonths = 2;
-
-        if (opt.displaySizeMonths > 2) opt.stickyMonths = true;
+        if (!opt.singleMonth && opt.displaySizeMonths > 2) opt.stickyMonths = true;
 
         if (opt.startDate && typeof opt.startDate == 'string') opt.startDate = moment(opt.startDate, opt.format).toDate();
         if (opt.endDate && typeof opt.endDate == 'string') opt.endDate = moment(opt.endDate, opt.format).toDate();
@@ -1076,7 +1074,7 @@
                 defaultTopText = translate('default-default');
 
             box.find('.default-top').html(defaultTopText.replace(/\%d/, opt.minDays).replace(/\%d/, opt.maxDays));
-            if (opt.singleMonth || opt.displaySizeMonths === 1) {
+            if (opt.singleMonth) {
                 box.addClass('single-month');
             } else {
                 box.addClass('two-months');
@@ -1110,7 +1108,7 @@
                 var isMonth2 = $(self).parents('table').hasClass('month2');
                 var month = isMonth2 ? opt.month2 : opt.month1;
                 month = nextMonth(month);
-                if (!opt.singleMonth && !opt.singleDate && opt.displaySizeMonths !== 1 && !isMonth2 && compare_month(month, opt.month2) >= 0 || isMonthOutOfBounds(month)) return;
+                if (!opt.singleMonth && !opt.singleDate && !isMonth2 && compare_month(month, opt.month2) >= 0 || isMonthOutOfBounds(month)) return;
                 showMonth(month, isMonth2 ? 'month2' : 'month1');
                 showGap();
             }
@@ -1121,11 +1119,11 @@
                 if (isMonthOutOfBounds(nextMonth2)) return;
                 if (!opt.singleDate && compare_month(nextMonth1, nextMonth2) >= 0) return;
 
-                if (opt.displaySizeMonths === 2) {
+                if (!opt.singleMonth && opt.displaySizeMonths === 2) {
                     showMonth(nextMonth1, 'month1');
                     showMonth(nextMonth2, 'month2');
                 }
-                else if (opt.displaySizeMonths > 2) {
+                else if (!opt.singleMonth && opt.displaySizeMonths > 2) {
 
                     nextMonth1 = moment(nextMonth2).add(opt.displaySizeMonths - 2, 'months');
                     nextMonth2 = moment(nextMonth1).add(1, 'months');
@@ -1169,11 +1167,11 @@
                 if (isMonthOutOfBounds(prevMonth1)) return;
                 if (!opt.singleDate && compare_month(prevMonth2, prevMonth1) <= 0) return;
 
-                if (opt.displaySizeMonths === 2) {
+                if (!opt.singleMonth && opt.displaySizeMonths === 2) {
                     showMonth(prevMonth2, 'month2');
                     showMonth(prevMonth1, 'month1');
                 }
-                else if (opt.displaySizeMonths > 2) {
+                else if (!opt.singleMonth && opt.displaySizeMonths > 2) {
 
                     prevMonth1 = moment(prevMonth1).subtract(opt.displaySizeMonths - 1, 'months');
                     prevMonth2 = moment(prevMonth1).add(1, 'months');
@@ -1340,6 +1338,12 @@
                     }
                 }
             }
+
+            var isMobile = $(window).width() < 480;
+
+            if (box.is(':visible') && (isMobile && !opt.singleMonth || !isMobile && opt.singleMonth)) {
+                closeDatePicker();
+            }
         }
 
         // Return the date picker wrapper element
@@ -1348,6 +1352,19 @@
         }
 
         function open(animationTime) {
+            var isMobile = $(window).width() < 480;
+
+            if (isMobile && !opt.singleMonth) {
+                opt.singleMonth = true;
+                opt.stickyMonths = false;
+                reCreateDom();
+            }
+            else if (!isMobile && opt.singleMonth) {
+                opt.singleMonth = false;
+                if (opt.displaySizeMonths > 2) opt.stickyMonths = true;
+                reCreateDom();
+            }
+
             redrawDatePicker();
             checkAndSetDefaultValue();
             if (opt.customOpenAnimation) {
@@ -1388,11 +1405,13 @@
                 opt.start = false;
             }
             
-            if (opt.initiatedFieldId === opt.toFieldId && opt.displaySizeMonths >= 2) {
-                $(".date-picker-wrapper").css({
-                    top: $("#"+opt.toFieldId).offset().bottom,
-                    left: $("#"+opt.toFieldId).offset().left
-                });
+            if (opt.initiatedFieldId === opt.toFieldId) {
+                if (opt.singleMonth && opt.displaySizeMonths >= 2) {
+                    $(".date-picker-wrapper").css({
+                        top: $("#"+opt.toFieldId).offset().bottom,
+                        left: $("#"+opt.toFieldId).offset().left
+                    });
+                }
 
                 opt.end = false;
             }
@@ -2061,7 +2080,7 @@
 
             }
 
-            if (opt.displaySizeMonths === 2) {
+            if (!opt.singleMonth && opt.displaySizeMonths === 2) {
                 showMonth(date1, 'month1');
 
                 if (opt.singleMonth !== true) {
@@ -2069,7 +2088,7 @@
                     showMonth(date2, 'month2');
                 }
             }
-            else if (opt.displaySizeMonths > 2) {
+            else if (!opt.singleMonth && opt.displaySizeMonths > 2) {
                 // skip ?
             }
 
@@ -2309,14 +2328,14 @@
         function redrawDatePicker() {
             if (opt.initiatedFieldId === opt.toFieldId && opt.checkIn && opt.checkOut) {
 
-                if (opt.displaySizeMonths === 1 && !moment(opt.checkOut).isSame(moment(opt.checkIn), 'months')) {
+                if (opt.singleMonth && !moment(opt.checkOut).isSame(moment(opt.checkIn), 'months')) {
                     opt.month1 = new Date(opt.checkOut);
                 }
-                else if (opt.displaySizeMonths === 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > 1) {
+                else if (!opt.singleMonth && opt.displaySizeMonths === 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > 1) {
                     opt.month2 = new Date(opt.checkOut);
                     opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
                 }
-                else if (opt.displaySizeMonths > 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > opt.displaySizeMonths) {
+                else if (!opt.singleMonth && opt.displaySizeMonths > 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > opt.displaySizeMonths) {
                     opt.month2 = moment(opt.checkOut).subtract(opt.displaySizeMonths - 2, 'months').toDate();
                     opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
                 }
@@ -2324,13 +2343,14 @@
                 opt.month1.setDate(1);
                 opt.month2.setDate(1);
             }
+
             showMonth(opt.month1, 'month1');
 
-            if (opt.displaySizeMonths >= 2) {
+            if (!opt.singleMonth && opt.displaySizeMonths >= 2) {
                 showMonth(opt.month2, 'month2');
             }
 
-            if (opt.displaySizeMonths > 2) {
+            if (!opt.singleMonth && opt.displaySizeMonths > 2) {
 
                 var dateMonth = moment(opt.month2).add(1, 'months');
 
@@ -2380,7 +2400,7 @@
         function createDom() {
             var html = '<div class="date-picker-wrapper';
             if (opt.extraClass) html += ' ' + opt.extraClass + ' ';
-            if (opt.singleDate || opt.displaySizeMonths === 1) html += ' single-date ';
+            if (opt.singleDate) html += ' single-date ';
             if (!opt.showShortcuts) html += ' no-shortcuts ';
             if (!opt.showTopbar) html += ' no-topbar ';
             if (opt.customTopBar) html += ' custom-topbar ';
@@ -2427,7 +2447,7 @@
                 '               <th colspan="' + _colspan + '" class="month-name">' +
                 '               </th>' +
                 '               <th>' +
-                (opt.singleDate || !opt.stickyMonths || opt.displaySizeMonths === 1 ? '<span class="next">' + arrowNext + '</span>' : '') +
+                (opt.singleDate || !opt.stickyMonths ? '<span class="next">' + arrowNext + '</span>' : '') +
                 '               </th>' +
                 '           </tr>' +
                 '           <tr class="week-name">' + getWeekHead() +
@@ -2456,7 +2476,7 @@
 
             }
 
-            if (opt.displaySizeMonths > 2) {
+            if (!opt.singleMonth && opt.displaySizeMonths > 2) {
                 for (var i = 3; i <= opt.displaySizeMonths; i++) {
 
                     if (i % 2 !== 0) {
@@ -2564,8 +2584,14 @@
 
             html += '</div></div>';
 
-
             return $(html);
+        }
+
+        function reCreateDom(){
+            box = createDom().hide();
+            box.append('<div class="date-range-length-tip"></div>');
+
+            $(opt.container).find('.date-picker-wrapper').replaceWith(box);
         }
 
         function getApplyBtnClass() {
@@ -2819,7 +2845,7 @@
                 showMonth(nextMonth(time), 'month2');
             }
 
-            if (opt.displaySizeMonths > 2) {
+            if (!opt.singleMonth && opt.displaySizeMonths > 2) {
 
                 var dateMonth = moment(opt.month2).add(1, 'months');
 
