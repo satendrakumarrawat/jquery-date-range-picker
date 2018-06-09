@@ -1406,7 +1406,7 @@
             }
             
             if (opt.initiatedFieldId === opt.toFieldId) {
-                if (opt.singleMonth && opt.displaySizeMonths >= 2) {
+                if (!opt.singleMonth && opt.displaySizeMonths >= 2) {
                     $(".date-picker-wrapper").css({
                         top: $("#"+opt.toFieldId).offset().bottom,
                         left: $("#"+opt.toFieldId).offset().left
