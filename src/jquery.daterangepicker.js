@@ -924,6 +924,8 @@
 
         if (opt.quickReSelect) opt.autoClose = true;
 
+        if (opt.singleMonth) opt.displaySizeMonths = 1;
+
         if (opt.displaySizeMonths < 1) opt.displaySizeMonths = 2;
 
         if (opt.displaySizeMonths > 2) opt.stickyMonths = true;
@@ -1386,7 +1388,7 @@
                 opt.start = false;
             }
             
-            if (opt.initiatedFieldId === opt.toFieldId) {
+            if (opt.initiatedFieldId === opt.toFieldId && opt.displaySizeMonths >= 2) {
                 $(".date-picker-wrapper").css({
                     top: $("#"+opt.toFieldId).offset().bottom,
                     left: $("#"+opt.toFieldId).offset().left
@@ -1609,6 +1611,7 @@
                             opt.start = false;
                             startIsValid = false;
                             clearSelection();
+                            break;
                         }
                     }
                 }
@@ -1622,6 +1625,17 @@
                     redrawDatePicker();
                 }
             }
+
+            if (opt.occupiedDates && opt.start && opt.end) {
+                for (var i = 0; i < opt.occupiedDates.length; i++) {
+                    if (moment.unix(opt.occupiedDates[i].checkin).isBetween(opt.start, opt.end)) {
+                        clearSelection();
+                        redrawDatePicker();
+                        break;
+                    }
+                }
+            }
+
             updateSelectableRange(time);
 
             checkSelectionValid();

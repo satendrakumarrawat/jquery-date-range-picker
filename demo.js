@@ -589,25 +589,6 @@ $(function()
         setTimeout(function(){
         	$('#date-range56').data('dateRangePicker').occupiedDates(bookings);
         }, 500);
-	})
-	.bind('datepicker-change',function(event, obj)
-	{
-		if (bookings) {
-			for (var i = 0; i < bookings.length; i++) {
-				if (obj.date1 && (moment.unix(bookings[i].checkin).isBetween(obj.date1, obj.date2, 'day', '[]') || moment.unix(bookings[i].checkout).isBetween(obj.date1, obj.date2, 'day', '[]'))) {
-					$('#date-range56').data('dateRangePicker').clear();
-
-					if (moment(obj.date1).isSame(obj.prev.date1, 'day') || moment(obj.date1).isSame(obj.prev.date2, 'day')) {
-						$('#date-range56').data('dateRangePicker').setStart(obj.date2);
-					}
-					else {
-					 	$('#date-range56').data('dateRangePicker').setStart(obj.date1);
-					}
-
-					$('#date-range56').data('dateRangePicker').redraw();
-				}
-			}
-		}
 	});
 
 	$('#date-range57').dateRangePicker(
@@ -643,25 +624,6 @@ $(function()
         setTimeout(function(){
         	$('#date-range57').data('dateRangePicker').occupiedDates(bookings);
         }, 500);
-	})
-	.bind('datepicker-change',function(event, obj)
-	{
-		if (bookings) {
-			for (var i = 0; i < bookings.length; i++) {
-				if (obj.date1 && (moment.unix(bookings[i].checkin).isBetween(obj.date1, obj.date2, 'day', '[]') || moment.unix(bookings[i].checkout).isBetween(obj.date1, obj.date2, 'day', '[]'))) {
-					$('#date-range57').data('dateRangePicker').clear();
-
-					if (moment(obj.date1).isSame(obj.prev.date1, 'day') || moment(obj.date1).isSame(obj.prev.date2, 'day')) {
-						$('#date-range57').data('dateRangePicker').setStart(obj.date2);
-					}
-					else {
-					 	$('#date-range57').data('dateRangePicker').setStart(obj.date1);
-					}
-
-					$('#date-range57').data('dateRangePicker').redraw();
-				}
-			}
-		}
 	});
 
 	$(document).on('click', '.reset', function() {
