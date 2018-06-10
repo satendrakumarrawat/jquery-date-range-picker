@@ -1621,15 +1621,32 @@
             opt.checkOut = opt.end;
 
             clearHovering();
+
+            if (opt.occupiedDates && opt.start && opt.end) {
+                for (var i = 0; i < opt.occupiedDates.length; i++) {
+                    if (moment.unix(opt.occupiedDates[i].checkin).isBetween(opt.start, opt.end)) {
+                        clearSelection();
+
+                        opt.start = parseInt(handleStart(time)) || false;
+                        opt.end = false;
+                        opt.checkIn = opt.start;
+                        opt.checkOut = false;
+
+                        redrawDatePicker();
+                        break;
+                    }
+                }
+            }
+
             if (opt.start && !opt.end) {
                 var startIsValid = true;
 
                 if (opt.occupiedDates) {
                     for (var i = 0; i < opt.occupiedDates.length; i++) {
                         if (opt.start && moment.unix(opt.occupiedDates[i].checkin).subtract(1, 'day').isSame(opt.start, 'day')) {
-                            opt.start = false;
                             startIsValid = false;
                             clearSelection();
+                            redrawDatePicker();
                             break;
                         }
                     }
@@ -1642,16 +1659,6 @@
                     dayHovering(day);
 
                     redrawDatePicker();
-                }
-            }
-
-            if (opt.occupiedDates && opt.start && opt.end) {
-                for (var i = 0; i < opt.occupiedDates.length; i++) {
-                    if (moment.unix(opt.occupiedDates[i].checkin).isBetween(opt.start, opt.end)) {
-                        clearSelection();
-                        redrawDatePicker();
-                        break;
-                    }
                 }
             }
 
