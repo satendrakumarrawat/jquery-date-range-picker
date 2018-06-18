@@ -1,6 +1,6 @@
 {
   "name": "daterangepicker-sati",
-  "version": "2.13.3",
+  "version": "2.13.4",
   "description": "Date range picker",
   "main": "demo.js",
   "scripts": {
