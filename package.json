@@ -1,9 +1,17 @@
 {
-  "name": "@waki/jquery-date-range-picker",
-  "main": "dist/jquery.daterangepicker.min.js",
-  "description": "jQuery Date Range Picker is a jQuery plugin that allows user to select a date range.",
-  "version": "2.13.0",
-  "license": "MIT",
+  "name": "daterangepicker-sati",
+  "version": "2.13.3",
+  "description": "Date range picker",
+  "main": "demo.js",
+  "scripts": {
+    "dist": "gulp",
+    "dev": "gulp dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/satendrakumarrawat/jquery-date-range-picker.git"
+  },
   "keywords": [
     "jquery",
     "date",
@@ -12,29 +20,20 @@
     "picker",
     "range"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/wakirin/jquery-date-range-picker.git"
-  },
+  "author": "satendra",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/wakirin/jquery-date-range-picker/issues"
+    "url": "https://github.com/satendrakumarrawat/jquery-date-range-picker/issues"
   },
-  "homepage": "https://github.com/wakirin/jquery-date-range-picker",
-  "maintainers": [],
-  "scripts": {
-    "dist": "gulp",
-    "dev": "gulp dev",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "homepage": "https://github.com/satendrakumarrawat/jquery-date-range-picker#readme",
   "engines": {
     "node": "0.12.x",
     "npm": "~3.9.2"
   },
-  "author": "waki <npm@coding.kz>",
   "contributors": [],
   "dependencies": {
     "moment": ">=2.8.1",
-    "jquery": ">=1.3.2"
+    "jquery": "^3.3.1"
   },
   "devDependencies": {
     "browser-sync": "^2.18.12",
