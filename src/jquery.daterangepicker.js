@@ -944,10 +944,12 @@
 
         $(this).unbind('.datepicker').bind('click.datepicker', function(evt) {
 
+            setInitiatedFieldId(evt.target.id);
+
             var isOpen = box.is(':visible');
             if (!isOpen) open(opt.duration);
 
-            quickReSelect(evt);
+            quickReSelect();
 
         }).bind('change.datepicker', function(evt) {
             checkAndSetDefaultValue();
@@ -1388,13 +1390,15 @@
             calcPosition();
         }
 
-        function quickReSelect(evt){
+        function setInitiatedFieldId(id) {
+            opt.initiatedFieldId = id;
+        }
+
+        function quickReSelect(){
             opt.checkIn = opt.start;
             opt.checkOut = opt.end;
 
             if (!opt.quickReSelect) return;
-
-            opt.initiatedFieldId = evt.target.id;
 
             if (opt.initiatedFieldId === opt.fromFieldId) {
                 $(".date-picker-wrapper").css({
@@ -1740,6 +1744,7 @@
             if (opt.start && !opt.end) {
                 box.find('.day.toMonth.valid').each(function() {
                     var time = parseInt($(this).attr('time'), 10);
+                    console.log(new Date(time*1000), isValidTime(time));
                     if (!isValidTime(time))
                         $(this).addClass('invalid tmp').removeClass('valid');
                     else
@@ -2060,8 +2065,15 @@
                 }
             }
 
-            showMonth(date1, 'month1');
-            showMonth(date2, 'month2');
+            if (opt.initiatedFieldId === opt.toFieldId && moment(opt.checkOut).diff(opt.checkIn, 'months', true) > opt.displaySizeMonths) {  
+                // already rendered
+                //showMonth(moment(date2), 'month1');
+                //showMonth(date2, 'month2');
+            }
+            else {
+                showMonth(date1, 'month1');
+                showMonth(date2, 'month2');
+            }
             showGap();
             checkSelectionValid();
             showSelectedInfo(false, silent);
@@ -2333,24 +2345,37 @@
         }
 
         function redrawDatePicker() {
-            if (opt.initiatedFieldId === opt.toFieldId && opt.checkIn && opt.checkOut) {
+            if (opt.checkIn && opt.checkOut) {
 
-                if (opt.singleMonth && !moment(opt.checkOut).isSame(moment(opt.checkIn), 'months')) {
-                    opt.month1 = new Date(opt.checkOut);
+                if (opt.initiatedFieldId === opt.toFieldId) {
+                    if (opt.singleMonth && !moment(opt.checkOut).isSame(moment(opt.checkIn), 'months')) {
+                        opt.month1 = new Date(opt.checkOut);
+                    }
+                    else if (!opt.singleMonth && opt.displaySizeMonths === 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > 1) {
+                        opt.month2 = new Date(opt.checkOut);
+                        opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
+                    }
+                    else if (!opt.singleMonth && opt.displaySizeMonths > 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > opt.displaySizeMonths) {
+                        opt.month2 = moment(opt.checkOut).subtract(opt.displaySizeMonths - 2, 'months').toDate();
+                        opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
+                    }
+                    else if (!opt.singleMonth && opt.displaySizeMonths > 2 && !moment(opt.checkIn).isSame(new Date(), 'month')) {
+                        opt.month1 = moment(opt.checkIn).toDate();
+                        opt.month2 = moment(opt.month1).add(1, 'months').toDate();
+                    }
                 }
-                else if (!opt.singleMonth && opt.displaySizeMonths === 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > 1) {
-                    opt.month2 = new Date(opt.checkOut);
-                    opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
-                }
-                else if (!opt.singleMonth && opt.displaySizeMonths > 2 && moment(opt.checkOut).diff(moment(opt.checkIn), 'months', true) > opt.displaySizeMonths) {
-                    opt.month2 = moment(opt.checkOut).subtract(opt.displaySizeMonths - 2, 'months').toDate();
-                    opt.month1 = moment(opt.month2).subtract(1, 'months').toDate();
+                else if (opt.initiatedFieldId === opt.fromFieldId) {
+                    if (!opt.singleMonth && opt.displaySizeMonths > 2 && !moment(opt.checkIn).isSame(new Date(), 'month')) {
+                        opt.month1 = moment(opt.checkIn).toDate();
+                        opt.month2 = moment(opt.month1).add(1, 'months').toDate();
+                    }
                 }
 
                 opt.month1.setDate(1);
                 opt.month2.setDate(1);
             }
 
+            console.log(moment(opt.month1).format('YYYY-MM'), moment(opt.month2).format('YYYY-MM'));
             showMonth(opt.month1, 'month1');
 
             if (!opt.singleMonth && opt.displaySizeMonths >= 2) {
@@ -2749,6 +2774,16 @@
                     }
 
                     if (opt.occupiedDates) {
+                        var timezoneCheckInDiff = 14 - ((new Date().getTimezoneOffset() / 60) + 7);
+                        var checkInMinutes = (timezoneCheckInDiff * 60) % 60;
+                        var checkInHours = Math.floor((timezoneCheckInDiff * 60) / 60);
+                        var checkin = (new Date(new Date(today.time).toISOString()).setHours(checkInHours, checkInMinutes, 0, 0)) / 1000;
+
+                        var timezoneCheckOutDiff = 12 - ((new Date().getTimezoneOffset() / 60) + 7);
+                        var checkOutMinutes = (timezoneCheckOutDiff * 60) % 60;
+                        var checkOutHours = Math.floor((timezoneCheckOutDiff * 60) / 60);
+                        var checkout = (new Date(new Date(today.time).toISOString()).setHours(checkOutHours, checkOutMinutes, 0, 0)) / 1000;
+//console.log(new Date(checkin*1000), new Date(checkout*1000));
                         for (var i = 0; i < opt.occupiedDates.length; i++) {
                             var _checkIn = moment.unix(opt.occupiedDates[i].checkin),
                                 _checkOut = moment.unix(opt.occupiedDates[i].checkout);
@@ -2761,7 +2796,7 @@
                                 today.valid = false;
                             }
 
-                            else if (today.valid && moment(today.date).isBetween(_checkIn, _checkOut, 'day', '[]')) {
+                            else if (today.valid && today.time > checkin && today.time < checkout) {
                                 today.valid = false;
                             }
                         }
