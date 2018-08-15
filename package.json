@@ -1,6 +1,6 @@
 {
   "name": "daterangepicker-sati",
-  "version": "2.13.5",
+  "version": "2.13.8",
   "description": "jQuery Date Range Picker is a jQuery plugin that allows user to select a date range.",
   "main": "dist/jquery.daterangepicker.min.js",
   "scripts": {
