@@ -97,7 +97,7 @@ $(function()
 		startOfWeek: 'monday',
     	separator : ' ~ ',
     	format: 'DD.MM.YYYY HH:mm',
-    	autoClose: false,
+		autoClose: false,
 		time: {
 			enabled: true
 		}
@@ -625,6 +625,35 @@ $(function()
         	$('#date-range57').data('dateRangePicker').occupiedDates(bookings);
         }, 500);
 	});
+
+	$('#date-range58').dateRangePicker(
+		{
+			autoClose: true,
+			stickyMonths: true,
+			quickReSelect: true,
+			displaySizeMonths: 6,
+			startDate: new Date(),
+			separator : ' to ',
+			fromFieldId: 'checkin4',
+			toFieldId: 'checkout4',
+			customTopBar: `<span class='calendar_current_selection'></span>
+				<div class="reset">
+					Reset
+				</div>
+			<div class="close-calendar"></div>`,
+			getValue: function()
+			{
+				if ($('#checkin4').val() && $('#checkout4').val() )
+					return $('#checkin4').val() + ' to ' + $('#checkout4').val();
+				else
+					return '';
+			},
+			setValue: function(s,s1,s2)
+			{
+				$('#checkin4').val(s1);
+				$('#checkout4').val(s2);
+			}
+		});
 
 	$(document).on('click', '.reset', function() {
 	    console.log('click');
