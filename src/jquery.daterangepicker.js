@@ -1744,7 +1744,7 @@
             if (opt.start && !opt.end) {
                 box.find('.day.toMonth.valid').each(function() {
                     var time = parseInt($(this).attr('time'), 10);
-                    console.log(new Date(time*1000), isValidTime(time));
+                    
                     if (!isValidTime(time))
                         $(this).addClass('invalid tmp').removeClass('valid');
                     else
@@ -2375,7 +2375,7 @@
                 opt.month2.setDate(1);
             }
 
-            console.log(moment(opt.month1).format('YYYY-MM'), moment(opt.month2).format('YYYY-MM'));
+            
             showMonth(opt.month1, 'month1');
 
             if (!opt.singleMonth && opt.displaySizeMonths >= 2) {
@@ -2783,7 +2783,7 @@
                         var checkOutMinutes = (timezoneCheckOutDiff * 60) % 60;
                         var checkOutHours = Math.floor((timezoneCheckOutDiff * 60) / 60);
                         var checkout = (new Date(new Date(today.time).toISOString()).setHours(checkOutHours, checkOutMinutes, 0, 0)) / 1000;
-//console.log(new Date(checkin*1000), new Date(checkout*1000));
+
                         for (var i = 0; i < opt.occupiedDates.length; i++) {
                             var _checkIn = moment.unix(opt.occupiedDates[i].checkin),
                                 _checkOut = moment.unix(opt.occupiedDates[i].checkout);
