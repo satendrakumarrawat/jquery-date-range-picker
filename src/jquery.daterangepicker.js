@@ -2792,7 +2792,8 @@
                                 today.valid = false;
                             }
 
-                            else if (today.valid && opt.checkIn && !opt.checkOut && moment(today.date).isAfter(opt.checkIn) && moment(today.date).isAfter(_checkOut) && moment(_checkOut).isAfter(opt.checkIn)) {
+                            // else if (today.valid && opt.checkIn && !opt.checkOut && moment(today.date).isAfter(opt.checkIn) && moment(today.date).isAfter(_checkOut) && moment(_checkOut).isAfter(opt.checkIn)) {
+                            else if (today.valid && opt.checkIn && !opt.checkOut && today.date.getTime()/1000 > opt.checkIn && moment(today.date).isAfter(_checkOut) && moment(_checkOut).isAfter(opt.checkIn)) {
                                 today.valid = false;
                             }
 
